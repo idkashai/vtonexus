@@ -1,7 +1,15 @@
 name: Build and deploy Vite app to GitHub Pages
 
+permissions:
+  contents: write
+
 on:
   push:
+    branches:
+      - main
+      - master
+      - feature/add-video-to-homepage
+  pull_request:
     branches:
       - main
       - master
@@ -28,7 +36,9 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Use a PAT stored in the repo secret GH_PAGES_DEPLOY_TOKEN if set,
+          # otherwise fall back to the automatic GITHUB_TOKEN.
+          github_token: ${{ secrets.GH_PAGES_DEPLOY_TOKEN || github.token }}
           publish_dir: ./dist
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
