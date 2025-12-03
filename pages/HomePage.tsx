@@ -315,18 +315,33 @@ const HowItWorks = () => {
 
 const VideoShowcase = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  const handlePlayPause = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.currentTime = 0; // Reset to start
+            video.play().catch(() => {
+              // Handle autoplay failure (e.g., browser policy)
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.3 } // Play when 30% of video is visible for smoother experience
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <section className="py-24 px-6 max-w-7xl mx-auto">
@@ -340,22 +355,10 @@ const VideoShowcase = () => {
           src="/3d.mp4"
           className="w-full h-full object-cover"
           poster="https://images.unsplash.com/photo-1503944168849-c1246463e59f?q=80&w=1600&auto=format&fit=crop"
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
+          muted // Required for autoplay in most browsers
+          loop
+          playsInline
         />
-
-        <div className="absolute inset-0 bg-black/50 z-10 flex items-center justify-center group-hover:bg-black/30 transition-colors">
-          <div
-            onClick={handlePlayPause}
-            className="w-24 h-24 bg-neonBlue/10 backdrop-blur-lg rounded-full flex items-center justify-center border border-neonBlue text-neonBlue group-hover:scale-110 transition-transform cursor-pointer shadow-[0_0_30px_rgba(0,240,255,0.3)]"
-          >
-            {isPlaying ? (
-              <Pause fill="currentColor" className="ml-2 w-10 h-10" />
-            ) : (
-              <Play fill="currentColor" className="ml-2 w-10 h-10" />
-            )}
-          </div>
-        </div>
 
         {/* UI Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-8 z-20 bg-gradient-to-t from-black via-black/80 to-transparent">
