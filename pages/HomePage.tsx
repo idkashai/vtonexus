@@ -314,6 +314,20 @@ const HowItWorks = () => {
 };
 
 const VideoShowcase = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   return (
     <section className="py-24 px-6 max-w-7xl mx-auto">
       <div className="text-center mb-12">
@@ -321,18 +335,27 @@ const VideoShowcase = () => {
         <p className="text-gray-400 mt-2">Watch the full Scan-to-Avatar experience.</p>
       </div>
       <div className="relative rounded-3xl overflow-hidden border border-white/10 aspect-video group max-w-5xl mx-auto shadow-2xl">
+        <video
+          ref={videoRef}
+          src="/3d.mp4"
+          className="w-full h-full object-cover"
+          poster="https://images.unsplash.com/photo-1503944168849-c1246463e59f?q=80&w=1600&auto=format&fit=crop"
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+        />
+
         <div className="absolute inset-0 bg-black/50 z-10 flex items-center justify-center group-hover:bg-black/30 transition-colors">
-          <div className="w-24 h-24 bg-neonBlue/10 backdrop-blur-lg rounded-full flex items-center justify-center border border-neonBlue text-neonBlue group-hover:scale-110 transition-transform cursor-pointer shadow-[0_0_30px_rgba(0,240,255,0.3)]">
-            <Play fill="currentColor" className="ml-2 w-10 h-10" />
+          <div
+            onClick={handlePlayPause}
+            className="w-24 h-24 bg-neonBlue/10 backdrop-blur-lg rounded-full flex items-center justify-center border border-neonBlue text-neonBlue group-hover:scale-110 transition-transform cursor-pointer shadow-[0_0_30px_rgba(0,240,255,0.3)]"
+          >
+            {isPlaying ? (
+              <Pause fill="currentColor" className="ml-2 w-10 h-10" />
+            ) : (
+              <Play fill="currentColor" className="ml-2 w-10 h-10" />
+            )}
           </div>
         </div>
-        
-        {/* Poster Image simulating the video content */}
-        <img 
-          src="https://images.unsplash.com/photo-1503944168849-c1246463e59f?q=80&w=1600&auto=format&fit=crop"
-          alt="App Demo"
-          className="w-full h-full object-cover opacity-80"
-        />
 
         {/* UI Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-8 z-20 bg-gradient-to-t from-black via-black/80 to-transparent">
@@ -348,7 +371,7 @@ const VideoShowcase = () => {
             </div>
             <Maximize2 className="text-gray-400 hover:text-white cursor-pointer" />
           </div>
-          {/* Fake Progress Bar */}
+          {/* Progress Bar */}
           <div className="w-full h-1 bg-gray-700 mt-6 rounded-full overflow-hidden">
              <div className="w-1/3 h-full bg-neonBlue"></div>
           </div>
