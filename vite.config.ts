@@ -5,7 +5,9 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
-      base: mode === 'production' ? '/vtonexus/' : '/',
+      // Use a relative base in production so built HTML uses relative paths
+      // which prevents absolute-root 404s when served from GitHub Pages.
+      base: mode === 'production' ? './' : '/',
       server: {
         port: 3000,
         host: '0.0.0.0',
